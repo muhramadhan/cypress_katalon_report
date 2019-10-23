@@ -157,7 +157,8 @@ do
             pass=false
             slack=true
             testCaseTitle=$(echo $decodedTestCase | tr '\r\n' ' ' | jq -r ".title")
-            footerElem+=''$testCaseTitle'\n'
+            errMsg=$(echo $decodedTestCase | tr '\r\n' ' ' | jq -r ".err.message" | tr '\n' ' ' | cut -c1-60)
+            footerElem+=''$testCaseTitle': '$errMsg'\n'
         fi
     done
     if [ -z "$footerElem" ]
