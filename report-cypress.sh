@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 mapping_jenkins_url(){
     MAPPING_JENKINS["order app"]="https://jenkins-staging.tokopedia.com/job/go%20-%20orderapp/job/Pipeline/"
     MAPPING_JENKINS["brand store"]="https://jenkins-staging.tokopedia.com/job/go%20-%20brand%20store/job/Pipeline/"
@@ -155,7 +155,7 @@ do
             slack=true
             testCaseTitle=$(echo $decodedTestCase | tr '\r\n' ' ' | jq -r ".title")
             errMsg=$(echo $decodedTestCase | tr '\r\n' ' ' | jq -r ".err.message" | tr '\n' ' ' | cut -c1-60)
-            footerElem+=''$testCaseTitle'': ''$errMsg''\n''
+            footerElem+=$testCaseTitle"\n"
         fi
     done
     if [ -z "$footerElem" ]
@@ -187,7 +187,7 @@ fi
 
 #https://hooks.slack.com/services/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
 #Cleaning report files
-# rm $REPORT_MOCHAWESOME_SERVICE_PATH/*.json
+rm $REPORT_MOCHAWESOME_SERVICE_PATH/*.json
 # rm $REPORT_MOCHAWESOME_SERVICE_PATH/../merge/*.json
 
 
