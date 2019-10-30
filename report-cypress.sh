@@ -112,8 +112,8 @@ fi
 
 # echo "Extracting test results information"
 
-test_name=$(jq -r '.env.test_name' cypress/config/$TEST_CONFIG_FILEPATH.json)
-test_env=$(jq -r '.env.env_name' cypress/config/$TEST_CONFIG_FILEPATH.json)
+test_name=$(jq -r '.env.test_name' cypress/cypress/config/$TEST_CONFIG_FILEPATH.json)
+test_env=$(jq -r '.env.env_name' cypress/cypress/config/$TEST_CONFIG_FILEPATH.json)
 num_tests=$(jq -r '.stats.tests' $REPORT_MOCHAWESOME_SERVICE_PATH/../${FOLDER_TIMESTAMP}_merged/mochawesome-merge.json)
 num_suites=$(jq -r '.stats.suites' $REPORT_MOCHAWESOME_SERVICE_PATH/../${FOLDER_TIMESTAMP}_merged/mochawesome-merge.json)
 failures=$(jq -r '.stats.failures' $REPORT_MOCHAWESOME_SERVICE_PATH/../${FOLDER_TIMESTAMP}_merged/mochawesome-merge.json)
