@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 mapping_jenkins_url(){
     MAPPING_JENKINS["order app"]="https://jenkins-staging.tokopedia.com/job/go%20-%20orderapp/job/Pipeline/"
     MAPPING_JENKINS["brand store"]="https://jenkins-staging.tokopedia.com/job/go%20-%20brand%20store/job/Pipeline/"
