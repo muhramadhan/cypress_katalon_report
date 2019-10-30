@@ -120,20 +120,55 @@ failures=$(jq -r '.stats.failures' $REPORT_MOCHAWESOME_SERVICE_PATH/../${FOLDER_
 payload=
 
 service_lower=$(echo "$SERVICE_NAME" | tr '[:upper:]' '[:lower:]')
-
 if [ -z "$test_name" ] && [ -z "$test_env" ]
 then
     payload='
     {
-        "text":"*Cypress Staging Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Test Name: '$test_name'*\n*Env: '$test_env'*\n*Number of test suite(s): '$num_suites'*\t*Number of test(s): '$num_tests'*\n*Failures: '$failures'*\n*Detail:* '${MAPPING_JENKINS[$SERVICE_NAME]}'",
-        "attachments": []
+        "text":"*Cypress Staging Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Test Name: '$test_name'*\n*Env: '$test_env'*\n*Number of test suite(s): '$num_suites'*\t*Number of test(s): '$num_tests'*\n*Failures: '$failures'*\n",
+        "attachments": [
+            {
+                "color": "#458b00",
+                "fallback": "Jenkins url: '$BUILD_URL'",
+                "actions":[
+                    {
+                        "type": "button",
+                        "text": "Jenkins",
+                        "url": "'$BUILD_URL'",
+                        "style":"primary"
+                    },{
+                        "type": "button",
+                        "text": "HTML Report",
+                        "url": "",
+                        "style":"primary"
+                    }
+                ]
+            }
+        ]
     }
     '
 else
     payload='
     {
-        "text":"*Cypress Staging Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Number of test suite(s): '$num_suites'*\t*Number of test(s): '$num_tests'*\n*Failures: '$failures'*\n*Detail:* '${MAPPING_JENKINS[$service_lower]}'",
-        "attachments": []
+        "text":"*Cypress Staging Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Number of test suite(s): '$num_suites'*\t*Number of test(s): '$num_tests'*\n*Failures: '$failures'*\n",
+        "attachments": [
+            {
+                "color": "#458b00",
+                "fallback": "Jenkins url: '$BUILD_URL'",
+                "actions":[
+                    {
+                        "type": "button",
+                        "text": "Jenkins",
+                        "url": "'$BUILD_URL'",
+                        "style":"primary"
+                    },{
+                        "type": "button",
+                        "text": "HTML Report",
+                        "url": "",
+                        "style":"primary"
+                    }
+                ]
+            }
+        ]
     }
     '
 fi
@@ -155,7 +190,7 @@ do
             slack=true
             testCaseTitle=$(echo $decodedTestCase | tr '\r\n' ' ' | jq -r ".title")
             errMsg=$(echo $decodedTestCase | tr '\r\n' ' ' | jq -r ".err.message" | tr '\n' ' ' | cut -c1-60)
-            footerElem+=''$testCaseTitle'': ''$errMsg''\n''
+            footerElem+=$testCaseTitle': '$(echo $errMsg | tr "\"" "\'")'\n'
         fi
     done
     if [ -z "$footerElem" ]
@@ -187,7 +222,5 @@ fi
 
 #https://hooks.slack.com/services/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
 #Cleaning report files
-# rm $REPORT_MOCHAWESOME_SERVICE_PATH/*.json
+rm $REPORT_MOCHAWESOME_SERVICE_PATH/*.json
 # rm $REPORT_MOCHAWESOME_SERVICE_PATH/../merge/*.json
-
-
