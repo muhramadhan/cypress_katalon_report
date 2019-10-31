@@ -190,7 +190,7 @@ do
             slack=true
             testCaseTitle=$(echo $decodedTestCase | tr '\r\n' ' ' | jq -r ".title")
             errMsg=$(echo $decodedTestCase | tr '\r\n' ' ' | jq -r ".err.message" | tr '\n' ' ' | cut -c1-60)
-            footerElem+=$testCaseTitle': '$(echo $errMsg | tr "\"" "")'\n'
+            footerElem+=$testCaseTitle': '$(echo $errMsg | tr "\"" "'")'\n'
         fi
     done
     if [ -z "$footerElem" ]
