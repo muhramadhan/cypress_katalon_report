@@ -128,12 +128,12 @@ then
         "attachments": [
             {
                 "color": "#458b00",
-                "fallback": "Jenkins url: '$BUILD_URL'",
+                "fallback": "Jenkins url: '${BUILD_URL}'",
                 "actions":[
                     {
                         "type": "button",
                         "text": "Jenkins",
-                        "url": "'$BUILD_URL'",
+                        "url": "'${BUILD_URL}'",
                         "style":"primary"
                     },{
                         "type": "button",
@@ -153,12 +153,12 @@ else
         "attachments": [
             {
                 "color": "#458b00",
-                "fallback": "Jenkins url: '$BUILD_URL'",
+                "fallback": "Jenkins url: '${BUILD_URL}'",
                 "actions":[
                     {
                         "type": "button",
                         "text": "Jenkins",
-                        "url": "'$BUILD_URL'",
+                        "url": "'${BUILD_URL}'",
                         "style":"primary"
                     },{
                         "type": "button",
