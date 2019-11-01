@@ -120,7 +120,8 @@ failures=$(jq -r '.stats.failures' $REPORT_MOCHAWESOME_SERVICE_PATH/../${FOLDER_
 payload=
 
 service_lower=$(echo "$SERVICE_NAME" | tr '[:upper:]' '[:lower:]')
-if [ -z "$test_name" ] && [ -z "$test_env" ]
+
+if [ -n "$test_name" ] && [ -n "$test_env" ]
 then
     payload='
     {
@@ -190,7 +191,7 @@ do
             slack=true
             testCaseTitle=$(echo $decodedTestCase | tr '\r\n' ' ' | jq -r ".title")
             errMsg=$(echo $decodedTestCase | tr '\r\n' ' ' | jq -r ".err.message" | tr '\n' ' ' | cut -c1-60)
-            footerElem+=$testCaseTitle': '$(echo $errMsg | tr "\"" "")'\n'
+            footerElem+=$testCaseTitle': '$(echo $errMsg | tr -d "\"'")'\n'
         fi
     done
     if [ -z "$footerElem" ]
