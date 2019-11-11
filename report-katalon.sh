@@ -44,12 +44,14 @@ done
 # Extracting test information
 ## index start from 1
 test_name=$(xmllint --xpath "string(//testsuite[1]/@id)" $REPORT_DIR/JUnit_Report.xml) #asumsi test suite cuma 1
-num_tests=$(xmllint --xpath "string(//testsuite[1]/@tests)" $REPORT_DIR/JUnit_Report.xml)
+passed=$(xmllint --xpath "string(//testsuite[1]/@tests)" $REPORT_DIR/JUnit_Report.xml)
 failures=$(xmllint --xpath "string(//testsuite[1]/@failures)" $REPORT_DIR/JUnit_Report.xml)
+errors=$(xmllint --xpath "string(//testsuite[1]/@failures)" $REPORT_DIR/JUnit_Report.xml)
+num_tests=$((passed + failures + errors))
 
 payload='
 {
-    "text":"*Katalon Staging Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Test Name: '$test_name'*\n*Number of test(s): '$num_tests'*\t*Failures: '$failures'*\n",
+    "text":"*Katalon Staging Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Test Name: '$test_name'*\n*Number of test(s): '$num_tests'*\t*Passed: '$passed'*\t*Failures: '$failures'*\t*Errors: '$errors'*\n",
     "attachments": [
         {
             "color": "#458b00",
