@@ -191,7 +191,7 @@ do
             slack=true
             testCaseTitle=$(echo $decodedTestCase | tr '\r\n' ' ' | jq -r ".title")
             errMsg=$(echo $decodedTestCase | tr '\r\n' ' ' | jq -r ".err.message" | tr '\n' ' ' | cut -c1-60)
-            footerElem+=$testCaseTitle': '$(echo $errMsg | tr -d "\"'")'\n'
+            footerElem+='-'$testCaseTitle': '$(echo $errMsg | tr -d "\"'")'\n'
         fi
     done
     if [ -z "$footerElem" ]
@@ -200,12 +200,13 @@ do
     fi
     if [ "$pass" = false ]
     then
-        suiteTitle=$(echo $i | base64 --decode | jq -r ".title")
+        suiteTitle=$(echo $i | base64 --decode | jq -r ".title" | sed 's/\"/\\"/g' )
+	#suiteTitle=${suiteTitle//\"/\\"}
         attachmentElem='
         {
             "color": "#8b0000",
             "title": "Test Suite '$((indexSuite+1))': \"'$suiteTitle'\"",
-            "footer": "'$(echo $footerElem)'"
+            "footer": "'$(echo $footerElem | sed 's/\"/\\"/g' )'"
         }
         '
         payload=$(jq ".attachments += [$attachmentElem]" <<< "$payload")
@@ -223,5 +224,5 @@ fi
 
 #https://hooks.slack.com/services/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
 #Cleaning report files
-rm $REPORT_MOCHAWESOME_SERVICE_PATH/*.json
+# rm $REPORT_MOCHAWESOME_SERVICE_PATH/*.json
 # rm $REPORT_MOCHAWESOME_SERVICE_PATH/../merge/*.json
