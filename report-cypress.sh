@@ -1,34 +1,7 @@
 #!/bin/bash
-mapping_jenkins_url(){
-    MAPPING_JENKINS["order app"]="https://jenkins-staging.tokopedia.com/job/go%20-%20orderapp/job/Pipeline/"
-    MAPPING_JENKINS["brand store"]="https://jenkins-staging.tokopedia.com/job/go%20-%20brand%20store/job/Pipeline/"
-    MAPPING_JENKINS["officialstore-home"]="https://jenkins-staging.tokopedia.com/job/Officialstore%20Home/job/Pipeline/"
-    MAPPING_JENKINS["brand store"]="https://jenkins-staging.tokopedia.com/job/go%20-%20brand%20store/job/Pipeline/"
-    MAPPING_JENKINS["os-seller"]="https://jenkins-staging.tokopedia.com/job/os-seller/job/Pipeline/"
-    MAPPING_JENKINS["fulfillment service"]="https://jenkins-staging.tokopedia.com/job/go%20-%20fulfillment%20service/"
-    MAPPING_JENKINS["keroaddr"]="https://jenkins-staging.tokopedia.com/job/go%20-%20kero-addr/job/Pipeline/"
-    MAPPING_JENKINS["gandalf/kero"]="https://jenkins-staging.tokopedia.com/job/go%20-%20kero/job/Pipeline/"
-    MAPPING_JENKINS["warehouse"]="https://jenkins-staging.tokopedia.com/job/warehouse/job/Pipeline/"
-    MAPPING_JENKINS["kero"]="https://jenkins-staging.tokopedia.com/job/go%20-%20kero/job/Pipeline/"
-    MAPPING_JENKINS["category"]="https://jenkins-staging.tokopedia.com/job/go%20-%20hades/job/Pipeline/"
-    MAPPING_JENKINS["search microservice"]="https://jenkins-staging.tokopedia.com/job/go%20-%20search%20microservice/job/Pipeline"
-    MAPPING_JENKINS["jerry"]="https://jenkins-staging.tokopedia.com/job/go%20-%20reputation/job/Pipeline"
-    MAPPING_JENKINS["campaign"]="https://jenkins-staging.tokopedia.com/job/go%20-%20campaign/job/Pipeline/"
-    MAPPING_JENKINS["gold merchant"]="https://jenkins-staging.tokopedia.com/view/all/job/go-goldmerchant/job/Pipeline/"
-    MAPPING_JENKINS["resolution"]="https://jenkins-staging.tokopedia.com/job/go%20-%20resolution/job/Pipeline/"
-    MAPPING_JENKINS["brand store"]="https://jenkins-staging.tokopedia.com/job/go%20-%20brand%20store/job/Pipeline/"
-    MAPPING_JENKINS["officialstore-home"]="https://jenkins-staging.tokopedia.com/job/Officialstore%20Home/job/Pipeline/"
-    MAPPING_JENKINS["os-seller"]="https://jenkins-staging.tokopedia.com/job/os-seller/job/Pipeline/"
-    MAPPING_JENKINS["openapi"]="https://jenkins-staging.tokopedia.com/job/openapi/job/Pipeline/"
-    MAPPING_JENKINS["krabs"]="https://jenkins-staging.tokopedia.com/job/go%20-%20toko/job/Pipeline/"
-}
 usage(){
     echo "Usage: [-r | --reportDir ReportPath] [-c | --config configFile] [-s | --service service_name]"
 }
-
-#preparing hash table
-declare -A MAPPING_JENKINS
-mapping_jenkins_url
 
 FOLDER_TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 
@@ -181,7 +154,8 @@ do
     # echo $i | base64 --decode | jq -r ".title"
     footerElem=
     pass=true
-    for j in $(echo $i | base64 --decode | jq -r ".tests[] | @base64")
+
+    for j in $(echo $i | base64 --decode | jq -r 'map(.. | select(.fail? == true)) | .[] | @base64')
     do    
         decodedTestCase=$(echo $j | base64 --decode)
         # echo $decodedTestCase | tr '\r\n' ' ' | jq -r ".title"
@@ -191,7 +165,7 @@ do
             slack=true
             testCaseTitle=$(echo $decodedTestCase | tr '\r\n' ' ' | jq -r ".title")
             errMsg=$(echo $decodedTestCase | tr '\r\n' ' ' | jq -r ".err.message" | tr '\n' ' ' | cut -c1-60)
-            footerElem+='-'$testCaseTitle': '$(echo $errMsg | tr -d "\"'")'\n'
+            footerElem+='-'$testCaseTitle': '$(echo $errMsg)'\n'
         fi
     done
     if [ -z "$footerElem" ]
@@ -206,14 +180,13 @@ do
         {
             "color": "#8b0000",
             "title": "Test Suite '$((indexSuite+1))': \"'$suiteTitle'\"",
-            "footer": "'$(echo $footerElem | sed 's/\"/\\"/g' )'"
+            "footer": "'$(echo $footerElem | sed 's/\"/\\"/g' | sed 's/'"'"'/\\"/g')'"
         }
         '
         payload=$(jq ".attachments += [$attachmentElem]" <<< "$payload")
     fi
     ((indexSuite++))
 done
-
 
 
 if [ $slack = true ]
