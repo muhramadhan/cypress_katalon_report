@@ -46,7 +46,7 @@ done
 test_name=$(xmllint --xpath "string(//testsuite[1]/@id)" $REPORT_DIR/JUnit_Report.xml) #asumsi test suite cuma 1
 passed=$(xmllint --xpath "string(//testsuite[1]/@tests)" $REPORT_DIR/JUnit_Report.xml)
 failures=$(xmllint --xpath "string(//testsuite[1]/@failures)" $REPORT_DIR/JUnit_Report.xml)
-errors=$(xmllint --xpath "string(//testsuite[1]/@failures)" $REPORT_DIR/JUnit_Report.xml)
+errors=$(xmllint --xpath "string(//testsuite[1]/@errors)" $REPORT_DIR/JUnit_Report.xml)
 num_tests=$((passed + failures + errors))
 
 payload='
@@ -89,6 +89,22 @@ while [[ $INDEX -le $failures ]];do
         SLACK=true
         ((INDEX++))
 done
+
+INDEX=1
+while [[ $INDEX -le $errors ]];do
+        testcaseName=$(xmllint --xpath "string(//testcase[@status='ERROR'][$INDEX]/@name)" $REPORT_DIR/JUnit_Report.xml)
+
+        attachmentElem='
+        {
+            "color": "#d07e00",
+            "title": "\"'$testcaseName'\""
+        }
+        '
+        payload=$(jq ".attachments += [$attachmentElem]" <<< "$payload")
+        SLACK=true
+        ((INDEX++))
+done
+
 if [[ $SLACK = true ]]
 then
     echo $payload
