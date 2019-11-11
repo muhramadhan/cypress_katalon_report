@@ -74,8 +74,8 @@ payload='
 SLACK=false
 ##Loop failed testcase(s)
 INDEX=1
-while [ $INDEX -le $failures ];do
-        testcaseName=$(xmllint --xpath "string(//testcase[@status='FAILED'][$INDEX]/@name)" $REPORT_DIR/JUnit_report.xml)
+while [[ $INDEX -le $failures ]];do
+        testcaseName=$(xmllint --xpath "string(//testcase[@status='FAILED'][$INDEX]/@name)" $REPORT_DIR/JUnit_Report.xml)
 
         attachmentElem='
         {
@@ -87,7 +87,7 @@ while [ $INDEX -le $failures ];do
         SLACK=true
         ((INDEX++))
 done
-if [ $SLACK = true ]
+if [[ $SLACK = true ]]
 then
     echo $payload
     # curl -i -X POST -H 'Content-type: application/json' --data "$payload" "$SLACK_HOOK"
