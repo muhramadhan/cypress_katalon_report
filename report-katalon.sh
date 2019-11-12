@@ -149,7 +149,9 @@ do
     done
 done
 
-payload=$(jq '. += {"text" : "*Katalon Staging Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Test Name: '$TEST_NAME'*\n*Number of test(s): '$num_tests_total'*\t*Passed: '$passed_total'*\t*Failures: '$failures_total'*\t*Errors: '$errors_total'*\n"}' <<< "$payload")
+headerText='"*Katalon Staging Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Test Name: '$TEST_NAME'*\n*Number of test(s): '$num_tests_total'*\t*Passed: '$passed_total'*\t*Failures: '$failures_total'*\t*Errors: '$errors_total'*\n"'
+
+payload=$(jq ". += {\"text\": $(echo $headerText)}" <<< "$payload")
 if [[ $SLACK = true ]]
 then
     echo $payload
