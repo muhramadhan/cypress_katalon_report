@@ -174,7 +174,7 @@ do
             
             failedTestCaseElem='
             {
-                "name" : "'$testCaseTitle'",
+                "name" : "'$(echo $testCaseTitle | sed 's/\\'"'"'/'"\""'/g' | sed 's/\"/\\"/g' | sed 's/'"'"'/\\"/g')'",
                 "error_message" : "'$errMsg'",
                 "status" : "failed"
             }
