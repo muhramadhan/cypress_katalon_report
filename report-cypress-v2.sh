@@ -175,7 +175,7 @@ do
             failedTestCaseElem='
             {
                 "name" : "'$(echo $testCaseTitle | sed 's/\\'"'"'/'"\""'/g' | sed 's/\"/\\"/g' | sed 's/'"'"'/\\"/g')'",
-                "error_message" : "'$errMsg'",
+                "error_message" : "'$(echo $decodedTestCase | tr '\r\n' ' ' | jq -r ".err.message" | tr '\n' ' ')'",
                 "status" : "failed"
             }
             '
