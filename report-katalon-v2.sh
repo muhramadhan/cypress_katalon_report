@@ -146,7 +146,7 @@ do
     INDEX=1
     while [[ $INDEX -le $errors ]];do
             testcaseName=$(xmllint --xpath "string(//testcase[@status='ERROR'][$INDEX]/@name)" $REPORT_DIR/${curr_timestamp}/JUnit_Report.xml)
-            errorMessage=$(xmllint --xpath "string(//testcase[@status='FAILED'][$INDEX]/error/@message)" $REPORT_DIR/${curr_timestamp}/JUnit_Report.xml)
+            errorMessage=$(xmllint --xpath "string(//testcase[@status='ERROR'][$INDEX]/error/@message)" $REPORT_DIR/${curr_timestamp}/JUnit_Report.xml)
 
             attachmentElem='
             {
