@@ -149,9 +149,15 @@ do
     done
 done
 
-headerText='"*Katalon Staging Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Test Name: '$TEST_NAME'*\n*Number of test(s): '$num_tests_total'*\t*Passed: '$passed_total'*\t*Failures: '$failures_total'*\t*Errors: '$errors_total'*\n"'
+headerText='"*Katalon '${ENV_NAME^}' Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Test Name: '$TEST_NAME'*\n*Number of test(s): '$num_tests_total'*\t*Passed: '$passed_total'*\t*Failures: '$failures_total'*\t*Errors: '$errors_total'*\n"'
 
 payload=$(jq ". += {\"text\": $(echo $headerText)}" <<< "$payload")
+
+payload=$(jq ". += {\"num_tests\": $(echo $num_tests_total)}" <<< "$payload")
+payload=$(jq ". += {\"failurers\": $(echo $failures_total)}" <<< "$payload")
+payload=$(jq ". += {\"errors\": $(echo $errors_total)}" <<< "$payload")
+payload=$(jq ". += {\"passed\": $(echo $passed_total)}" <<< "$payload")
+
 #if [[ $SLACK = true ]]
 #then
     echo $payload

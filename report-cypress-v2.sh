@@ -52,6 +52,11 @@ then
     exit 1
 fi
 
+
+report_path_arr=(${REPORT_MOCHAWESOME_SERVICE_PATH//\// })
+automation_folder=${report_path_arr[0]}
+
+
 if [ ! -f $REPORT_MOCHAWESOME_SERVICE_PATH/mochawesome.json ]
 then
     echo "Error: There is no report file in $REPORT_MOCHAWESOME_SERVICE_PATH"
@@ -61,7 +66,7 @@ fi
 MERGED=false
 # echo "Merging mochawesome jsons"
 mkdir -p $REPORT_MOCHAWESOME_SERVICE_PATH/../${FOLDER_TIMESTAMP}_merged
-npx mochawesome-merge --reportDir $REPORT_MOCHAWESOME_SERVICE_PATH > $REPORT_MOCHAWESOME_SERVICE_PATH/../${FOLDER_TIMESTAMP}_merged/mochawesome-merge.json
+node $automation_folder/node_modules/.bin/mochawesome-merge  --reportDir $REPORT_MOCHAWESOME_SERVICE_PATH > $REPORT_MOCHAWESOME_SERVICE_PATH/../${FOLDER_TIMESTAMP}_merged/mochawesome-merge.json
 if [ $? -eq 0 ]
 then
     MERGED=true
@@ -85,8 +90,8 @@ fi
 
 # echo "Extracting test results information"
 
-test_name=$(jq -r '.env.test_name' cypress/config/$TEST_CONFIG_FILEPATH.json)
-test_env=$(jq -r '.env.env_name' cypress/config/$TEST_CONFIG_FILEPATH.json)
+test_name=$(jq -r '.env.test_name' $TEST_CONFIG_FILEPATH.json)
+test_env=$(jq -r '.env.env_name' $TEST_CONFIG_FILEPATH.json)
 num_tests=$(jq -r '.stats.tests' $REPORT_MOCHAWESOME_SERVICE_PATH/../${FOLDER_TIMESTAMP}_merged/mochawesome-merge.json)
 num_suites=$(jq -r '.stats.suites' $REPORT_MOCHAWESOME_SERVICE_PATH/../${FOLDER_TIMESTAMP}_merged/mochawesome-merge.json)
 failures=$(jq -r '.stats.failures' $REPORT_MOCHAWESOME_SERVICE_PATH/../${FOLDER_TIMESTAMP}_merged/mochawesome-merge.json)
@@ -98,7 +103,7 @@ if [ -n "$test_name" ] && [ -n "$test_env" ]
 then
     payload='
     {
-        "text":"*Cypress Staging Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Test Name: '$test_name'*\n*Env: '$test_env'*\n*Number of test suite(s): '$num_suites'*\t*Number of test(s): '$num_tests'*\n*Failures: '$failures'*\n",
+        "text":"*Cypress '${ENV_NAME^}' Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Test Name: '$test_name'*\n*Env: '$test_env'*\n*Number of test suite(s): '$num_suites'*\t*Number of test(s): '$num_tests'*\n*Failures: '$failures'*\n",
         "attachments": [
             {
                 "color": "#458b00",
@@ -188,6 +193,10 @@ do
     ((indexSuite++))
 done
 
+payload=$(jq ". += {\"num_suites\": \"$(echo $num_suites)\"}" <<< "$payload")
+payload=$(jq ". += {\"num_tests\": \"$(echo $num_tests)\"}" <<< "$payload")
+payload=$(jq ". += {\"failures\": \"$(echo $failures)\"}" <<< "$payload")
+payload=$(jq ". += {\"passed\": \"$((num_tests - failures))\"}" <<< "$payload")
 
 #if [ $slack = true ]
 #then
