@@ -180,7 +180,7 @@ do
         {
             "color": "#8b0000",
             "title": "Test Suite '$((indexSuite+1))': \"'$suiteTitle'\"",
-            "footer": "'$(echo $footerElem | sed 's/\"/\\"/g' | sed 's/'"'"'/\\"/g')'"
+            "footer": "'$(echo $footerElem | sed 's/\"/\\"/g' | sed 's/'"'"'/\"/g')'"
         }
         '
         payload=$(jq ".attachments += [$attachmentElem]" <<< "$payload")

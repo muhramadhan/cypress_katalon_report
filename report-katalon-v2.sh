@@ -128,6 +128,15 @@ do
                 "title": "\"'$testcaseName'\""
             }
             '
+            failedTestCaseElem='
+            {
+                "name" : "'$testCaseTitle'",
+                "error_message" : "'$errMsg'",
+                "status" : "failed"
+            }
+            '
+            payload=$(jq ".failed_testcase += [$failedTestCaseElem]" <<< "$payload")
+
             payload=$(jq ".attachments += [$attachmentElem]" <<< "$payload")
             SLACK=true
             ((INDEX++))
@@ -143,6 +152,15 @@ do
                 "title": "\"'$testcaseName'\""
             }
             '
+            failedTestCaseElem='
+            {
+                "name" : "'$testCaseTitle'",
+                "error_message" : "'$errMsg'",
+                "status" : "error"
+            }
+            '
+
+            payload=$(jq ".failed_testcase += [$failedTestCaseElem]" <<< "$payload")
             payload=$(jq ".attachments += [$attachmentElem]" <<< "$payload")
             SLACK=true
             ((INDEX++))
@@ -154,7 +172,7 @@ headerText='"*Katalon '${ENV_NAME^}' Automation Report*\n\n*Service Name: '$SERV
 payload=$(jq ". += {\"text\": $(echo $headerText)}" <<< "$payload")
 
 payload=$(jq ". += {\"num_tests\": $(echo $num_tests_total)}" <<< "$payload")
-payload=$(jq ". += {\"failurers\": $(echo $failures_total)}" <<< "$payload")
+payload=$(jq ". += {\"failures\": $(echo $failures_total)}" <<< "$payload")
 payload=$(jq ". += {\"errors\": $(echo $errors_total)}" <<< "$payload")
 payload=$(jq ". += {\"passed\": $(echo $passed_total)}" <<< "$payload")
 

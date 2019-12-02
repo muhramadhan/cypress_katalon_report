@@ -171,6 +171,15 @@ do
             testCaseTitle=$(echo $decodedTestCase | tr '\r\n' ' ' | jq -r ".title")
             errMsg=$(echo $decodedTestCase | tr '\r\n' ' ' | jq -r ".err.message" | tr '\n' ' ' | cut -c1-55)
             footerElem+='-'$testCaseTitle': '$(echo $errMsg)'\n'
+            
+            failedTestCaseElem='
+            {
+                "name" : "'$testCaseTitle'",
+                "error_message" : "'$errMsg'",
+                "status" : "failed"
+            }
+            '
+            payload=$(jq ".failed_testcase += [$failedTestCaseElem]" <<< "$payload")
         fi
     done
     if [ -z "$footerElem" ]
@@ -193,6 +202,7 @@ do
     ((indexSuite++))
 done
 
+payload=$(jq ". += {\"num_suites\": \"$(echo $num_suites)\"}" <<< "$payload")
 payload=$(jq ". += {\"num_suites\": \"$(echo $num_suites)\"}" <<< "$payload")
 payload=$(jq ". += {\"num_tests\": \"$(echo $num_tests)\"}" <<< "$payload")
 payload=$(jq ". += {\"failures\": \"$(echo $failures)\"}" <<< "$payload")
