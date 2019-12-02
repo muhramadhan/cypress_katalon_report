@@ -121,6 +121,7 @@ do
     INDEX=1
     while [[ $INDEX -le $failures ]];do
             testcaseName=$(xmllint --xpath "string(//testcase[@status='FAILED'][$INDEX]/@name)" $REPORT_DIR/${curr_timestamp}/JUnit_Report.xml)
+            errorMessage=$(xmllint --xpath "string(//testcase[@status='FAILED'][$INDEX]/failure/@message)" $REPORT_DIR/${curr_timestamp}/JUnit_Report.xml)
 
             attachmentElem='
             {
@@ -130,7 +131,7 @@ do
             '
             failedTestCaseElem='
             {
-                "name" : "'$testCaseTitle'",
+                "name" : "'$testCaseName'",
                 "error_message" : "'$errMsg'",
                 "status" : "failed"
             }
@@ -145,6 +146,7 @@ do
     INDEX=1
     while [[ $INDEX -le $errors ]];do
             testcaseName=$(xmllint --xpath "string(//testcase[@status='ERROR'][$INDEX]/@name)" $REPORT_DIR/${curr_timestamp}/JUnit_Report.xml)
+            errorMessage=$(xmllint --xpath "string(//testcase[@status='FAILED'][$INDEX]/error/@message)" $REPORT_DIR/${curr_timestamp}/JUnit_Report.xml)
 
             attachmentElem='
             {
@@ -154,8 +156,8 @@ do
             '
             failedTestCaseElem='
             {
-                "name" : "'$testCaseTitle'",
-                "error_message" : "'$errMsg'",
+                "name" : "'$testCaseName'",
+                "error_message" : "'$errorMessage'",
                 "status" : "error"
             }
             '
