@@ -121,7 +121,6 @@ do
     INDEX=1
     while [[ $INDEX -le $failures ]];do
             testcaseName=$(xmllint --xpath "string(//testcase[@status='FAILED'][$INDEX]/@name)" $REPORT_DIR/${curr_timestamp}/JUnit_Report.xml)
-            errorMessage=$(xmllint --xpath "string(//testcase[@status='FAILED'][$INDEX]/failure/@message)" $REPORT_DIR/${curr_timestamp}/JUnit_Report.xml)
 
             attachmentElem='
             {
@@ -129,15 +128,6 @@ do
                 "title": "\"'$testcaseName'\""
             }
             '
-            failedTestCaseElem='
-            {
-                "name" : "'$testCaseName'",
-                "error_message" : "'$errMsg'",
-                "status" : "failed"
-            }
-            '
-            payload=$(jq ".failed_testcase += [$failedTestCaseElem]" <<< "$payload")
-
             payload=$(jq ".attachments += [$attachmentElem]" <<< "$payload")
             SLACK=true
             ((INDEX++))
@@ -145,24 +135,14 @@ do
 
     INDEX=1
     while [[ $INDEX -le $errors ]];do
-            testCaseName=$(xmllint --xpath "string(//testcase[@status='ERROR'][$INDEX]/@name)" $REPORT_DIR/${curr_timestamp}/JUnit_Report.xml)
-            errorMessage=$(xmllint --xpath "string(//testcase[@status='ERROR'][$INDEX]/error/@message)" $REPORT_DIR/${curr_timestamp}/JUnit_Report.xml)
+            testcaseName=$(xmllint --xpath "string(//testcase[@status='ERROR'][$INDEX]/@name)" $REPORT_DIR/${curr_timestamp}/JUnit_Report.xml)
 
             attachmentElem='
             {
                 "color": "#d07e00",
-                "title": "\"'$testCaseName'\""
+                "title": "\"'$testcaseName'\""
             }
             '
-            failedTestCaseElem='
-            {
-                "name" : "'$testCaseName'",
-                "error_message" : "'$errorMessage'",
-                "status" : "error"
-            }
-            '
-
-            payload=$(jq ".failed_testcase += [$failedTestCaseElem]" <<< "$payload")
             payload=$(jq ".attachments += [$attachmentElem]" <<< "$payload")
             SLACK=true
             ((INDEX++))
