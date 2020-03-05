@@ -99,11 +99,11 @@ payload=
 
 service_lower=$(echo "$SERVICE_NAME" | tr '[:upper:]' '[:lower:]')
 
-if [ -n "$test_name" ] && [ -n "$test_env" ]
+if [ -n "$test_name" ]
 then
     payload='
     {
-        "text":"*Cypress '${ENV_NAME^}' Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Test Name: '$test_name'*\n*Env: '$test_env'*\n*Number of test suite(s): '$num_suites'*\t*Number of test(s): '$num_tests'*\n*Failures: '$failures'*\n",
+        "text":"*Cypress '${ENV_NAME^}' Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Test Name: '$test_name'*\n*\n*Number of test suite(s): '$num_suites'*\t*Number of test(s): '$num_tests'*\n*Failures: '$failures'*\n",
         "attachments": [
             {
                 "color": "#458b00",
@@ -128,7 +128,7 @@ then
 else
     payload='
     {
-        "text":"*Cypress Staging Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Number of test suite(s): '$num_suites'*\t*Number of test(s): '$num_tests'*\n*Failures: '$failures'*\n",
+        "text":"*Cypress '${ENV_NAME^}' Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Number of test suite(s): '$num_suites'*\t*Number of test(s): '$num_tests'*\n*Failures: '$failures'*\n",
         "attachments": [
             {
                 "color": "#458b00",
