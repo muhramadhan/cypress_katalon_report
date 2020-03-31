@@ -197,6 +197,7 @@ payload=$(jq ". += {\"num_suites\": \"$(echo $num_suites)\"}" <<< "$payload")
 payload=$(jq ". += {\"num_tests\": \"$(echo $num_tests)\"}" <<< "$payload")
 payload=$(jq ". += {\"failures\": \"$(echo $failures)\"}" <<< "$payload")
 payload=$(jq ". += {\"passed\": \"$((num_tests - failures))\"}" <<< "$payload")
+payload=$(jq ". += {\"report_folder\" : \"$(echo $FOLDER_TIMESTAMP)\"}" <<< "$payload")
 
 #if [ $slack = true ]
 #then
