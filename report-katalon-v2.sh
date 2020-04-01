@@ -121,7 +121,7 @@ do
 
     ##Loop failed testcase(s)
     INDEX=1
-    while [[ $INDEX -le $failures -a $currAttachment -lt $maxAttachment ]];do
+    while [[ ($INDEX -le $failures) && ($currAttachment -lt $maxAttachment) ]];do
             testcaseName=$(xmllint --xpath "string(//testcase[@status='FAILED'][$INDEX]/@name)" $REPORT_DIR/${curr_timestamp}/JUnit_Report.xml)
 
             attachmentElem='
@@ -137,7 +137,7 @@ do
     done
 
     INDEX=1
-    while [[ $INDEX -le $errors -a $currAttachment -lt $maxAttachment ]];do
+    while [[ ($INDEX -le $errors) && ($currAttachment -lt $maxAttachment) ]];do
             testcaseName=$(xmllint --xpath "string(//testcase[@status='ERROR'][$INDEX]/@name)" $REPORT_DIR/${curr_timestamp}/JUnit_Report.xml)
 
             attachmentElem='
