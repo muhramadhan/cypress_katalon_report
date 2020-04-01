@@ -101,6 +101,8 @@ failures_total=0
 errors_total=0
 num_tests_total=0
 SLACK=false
+maxAttachment=90
+currAttachment=0
 for curr_timestamp in ${time_arr[@]}
 do
     # Extracting test information
@@ -119,7 +121,7 @@ do
 
     ##Loop failed testcase(s)
     INDEX=1
-    while [[ $INDEX -le $failures ]];do
+    while [[ $INDEX -le $failures -a $currAttachment -lt $maxAttachment ]];do
             testcaseName=$(xmllint --xpath "string(//testcase[@status='FAILED'][$INDEX]/@name)" $REPORT_DIR/${curr_timestamp}/JUnit_Report.xml)
 
             attachmentElem='
@@ -131,10 +133,11 @@ do
             payload=$(jq ".attachments += [$attachmentElem]" <<< "$payload")
             SLACK=true
             ((INDEX++))
+            ((currAttachment++))
     done
 
     INDEX=1
-    while [[ $INDEX -le $errors ]];do
+    while [[ $INDEX -le $errors -a $currAttachment -lt $maxAttachment ]];do
             testcaseName=$(xmllint --xpath "string(//testcase[@status='ERROR'][$INDEX]/@name)" $REPORT_DIR/${curr_timestamp}/JUnit_Report.xml)
 
             attachmentElem='
@@ -146,10 +149,15 @@ do
             payload=$(jq ".attachments += [$attachmentElem]" <<< "$payload")
             SLACK=true
             ((INDEX++))
+            ((currAttachment++))
     done
 done
 
-headerText='"*Katalon '${ENV_NAME^}' Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Test Name: '$TEST_NAME'*\n*Number of test(s): '$num_tests_total'*\t*Passed: '$passed_total'*\t*Failures: '$failures_total'*\t*Errors: '$errors_total'*\n"'
+cutoffText=''
+if [[ ((failures_total + errors_total)) -gt $maxAttachment ]]
+then
+    cutoffText='Note: not all test case are shown, check the file for more detailed report'
+headerText='"*Katalon '${ENV_NAME^}' Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Test Name: '$TEST_NAME'*\n*Number of test(s): '$num_tests_total'*\t*Passed: '$passed_total'*\t*Failures: '$failures_total'*\t*Errors: '$errors_total'*\n'$cutoffText'"'
 
 payload=$(jq ". += {\"text\": $(echo $headerText)}" <<< "$payload")
 
@@ -157,6 +165,8 @@ payload=$(jq ". += {\"num_tests\": $(echo $num_tests_total)}" <<< "$payload")
 payload=$(jq ". += {\"failures\": $(echo $failures_total)}" <<< "$payload")
 payload=$(jq ". += {\"errors\": $(echo $errors_total)}" <<< "$payload")
 payload=$(jq ". += {\"passed\": $(echo $passed_total)}" <<< "$payload")
+
+payload=$(jq ". += {\"channel\": \"toe-alert-space\"}" <<< "$payload")
 
 #if [[ $SLACK = true ]]
 #then
