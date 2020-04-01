@@ -157,6 +157,8 @@ cutoffText=''
 if [[ ((failures_total + errors_total)) -gt $maxAttachment ]]
 then
     cutoffText='Note: not all test case are shown, check the file for more detailed report'
+fi
+
 headerText='"*Katalon '${ENV_NAME^}' Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Test Name: '$TEST_NAME'*\n*Number of test(s): '$num_tests_total'*\t*Passed: '$passed_total'*\t*Failures: '$failures_total'*\t*Errors: '$errors_total'*\n'$cutoffText'"'
 
 payload=$(jq ". += {\"text\": $(echo $headerText)}" <<< "$payload")
