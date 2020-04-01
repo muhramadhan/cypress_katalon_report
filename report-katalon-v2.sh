@@ -154,9 +154,9 @@ do
 done
 
 cutoffText=''
-if [[ ((failures_total + errors_total)) -gt $maxAttachment ]]
+if [[ $((failures_total + errors_total)) -gt $maxAttachment ]]
 then
-    cutoffText='Note: not all test case are shown, check the file for more detailed report'
+    cutoffText="Note: not all test case are shown because it exceed slack's limit, check the file for more detailed report"
 fi
 
 headerText='"*Katalon '${ENV_NAME^}' Automation Report*\n\n*Service Name: '$SERVICE_NAME'*\n*Test Name: '$TEST_NAME'*\n*Number of test(s): '$num_tests_total'*\t*Passed: '$passed_total'*\t*Failures: '$failures_total'*\t*Errors: '$errors_total'*\n'$cutoffText'"'
@@ -168,7 +168,7 @@ payload=$(jq ". += {\"failures\": $(echo $failures_total)}" <<< "$payload")
 payload=$(jq ". += {\"errors\": $(echo $errors_total)}" <<< "$payload")
 payload=$(jq ". += {\"passed\": $(echo $passed_total)}" <<< "$payload")
 
-payload=$(jq ". += {\"channel\": \"toe-alert-space\"}" <<< "$payload")
+# payload=$(jq ". += {\"channel\": \"toe-alert-space\"}" <<< "$payload")
 
 #if [[ $SLACK = true ]]
 #then
